@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-
+import MainLayout from "./layouts/MainLayout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -17,14 +17,18 @@ function App() {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/books" element={<Books />} />
-      <Route path="/categories" element={<Categories />} />
-      <Route path="/publishers" element={<Publishers />} />
-      <Route path="/loans" element={<Loans />} />
-      <Route path="/fines" element={<Fines />} />
-      <Route path="/users" element={<Users />} />
-      <Route path="/profile" element={<Profile />} />
+
+      <Route element={<MainLayout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/books" element={<Books />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/publishers" element={<Publishers />} />
+        <Route path="/loans" element={<Loans />} />
+        <Route path="/fines" element={<Fines />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/profile" element={<Profile />} />
+      </Route>
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
