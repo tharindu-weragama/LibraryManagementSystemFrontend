@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { addBook } from "../services/bookService";
+import { addBook, updateBook } from "../services/bookService";
+import { useEffect, useState } from "react";
 
-function BookForm() {
+function BookForm({ onBookAdded, editingBook }) {
     const [title, setTitle] = useState("");
     const [isbn, setIsbn] = useState("");
     const [author, setAuthor] = useState("");
@@ -9,6 +9,18 @@ function BookForm() {
     const [totalCopies, setTotalCopies] = useState("");
     const [categoryId, setCategoryId] = useState("");
     const [publisherId, setPublisherId] = useState("");
+
+    useEffect(() => {
+        if (editingBook) {
+            setTitle(editingBook.title || "");
+            setIsbn(editingBook.isbn || "");
+            setAuthor(editingBook.author || "");
+            setPublishedYear(editingBook.publishedYear || "");
+            setTotalCopies(editingBook.totalCopies || "");
+            setCategoryId(editingBook.categoryId || "");
+            setPublisherId(editingBook.publisherId || "");
+        }
+    }, [editingBook]);
 
     const handleSave = async () => {
         const book = {
@@ -22,17 +34,26 @@ function BookForm() {
         };
 
         try {
-            await addBook(book);
-            alert("Book added successfully!");
-        } catch (error) {
-            console.error("Error adding book:", error);
-            alert("Failed to add book.");
+            if (editingBook) {
+                await updateBook(editingBook.bookId, book);
+                alert("Book updated successfully!");
+            } else {
+                await addBook(book);
+                alert("Book added successfully!");
+            }
+
+            onBookAdded();
+        }
+
+        catch (error) {
+            console.error("Error saving book:", error);
+            alert("Failed to save book.");
         }
     };
 
     return (
         <div className="card p-3 mb-3">
-            <h4>Add Book</h4>
+            <h4>{editingBook ? "Edit Book" : "Add Book"}</h4>
 
             <input
                 className="form-control mb-2"
