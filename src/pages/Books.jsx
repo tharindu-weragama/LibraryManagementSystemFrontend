@@ -68,19 +68,30 @@ function Books() {
             <table className="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>No.</th>
                         <th>Title</th>
                         <th>Author</th>
+                        <th>Category</th>
+                        <th>Publisher</th>
+                        <th>Year</th>
+                        <th>Copies</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {books.map((book) => (
+                    {books.map((book, index) => (
                         <tr key={book.bookId}>
-                            <td>{book.bookId}</td>
+                            <td>{index + 1}</td>
                             <td>{book.title}</td>
                             <td>{book.author}</td>
+                            <td>{book.categoryName}</td>
+                            <td>{book.publisherName}</td>
+                            <td>{book.publishedYear}</td>
+
+                            <td>
+                                {book.availableCopies} / {book.totalCopies}
+                            </td>
 
                             <td>
                                 <button
@@ -95,7 +106,9 @@ function Books() {
 
                                 <button
                                     className="btn btn-danger btn-sm"
-                                    onClick={() => handleDelete(book.bookId)}
+                                    onClick={() =>
+                                        handleDelete(book.bookId)
+                                    }
                                 >
                                     Delete
                                 </button>
