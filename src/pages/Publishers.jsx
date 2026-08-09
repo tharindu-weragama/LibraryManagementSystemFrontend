@@ -4,11 +4,19 @@ import {
     deletePublisher,
 } from "../services/publisherService";
 import PublisherForm from "../components/PublisherForm";
+import useRole from "../hooks/useRole";
 
 function Publishers() {
     const [publishers, setPublishers] = useState([]);
     const [editingPublisher, setEditingPublisher] = useState(null);
     const [showForm, setShowForm] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    const { isAdmin, isLibrarian } = useRole();
+
+    const canManagePublishers =
+        isAdmin || isLibrarian;
 
     useEffect(() => {
         loadPublishers();
@@ -16,10 +24,24 @@ function Publishers() {
 
     const loadPublishers = async () => {
         try {
+            setLoading(true);
+            setError("");
+
             const response = await getPublishers();
+
             setPublishers(response.data);
         } catch (error) {
-            console.error("Error loading publishers:", error);
+            console.error(
+                "Error loading publishers:",
+                error
+            );
+
+            setError(
+                error.response?.data?.message ||
+                "Failed to load publishers."
+            );
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -28,97 +50,167 @@ function Publishers() {
             "Are you sure you want to delete this publisher?"
         );
 
-        if (!confirmed) return;
+        if (!confirmed) {
+            return;
+        }
 
         try {
+            setError("");
+
             await deletePublisher(id);
-            alert("Publisher deleted successfully!");
-            loadPublishers();
+
+            await loadPublishers();
         } catch (error) {
-            console.error("Error deleting publisher:", error);
-            alert("Failed to delete publisher.");
+            console.error(
+                "Error deleting publisher:",
+                error
+            );
+
+            setError(
+                error.response?.data?.message ||
+                "Failed to delete publisher."
+            );
         }
     };
 
     return (
         <div>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <h2 className="mb-0">
+                    Publishers
+                </h2>
 
-            <h2>Publishers</h2>
+                {canManagePublishers && (
+                    <button
+                        className="btn btn-primary"
+                        onClick={() => {
+                            setEditingPublisher(null);
+                            setShowForm(!showForm);
+                        }}
+                    >
+                        {showForm
+                            ? "Close"
+                            : "Add Publisher"}
+                    </button>
+                )}
+            </div>
 
-            <button
-                className="btn btn-primary mb-3"
-                onClick={() => {
-                    setEditingPublisher(null);
-                    setShowForm(!showForm);
-                }}
-            >
-                Add Publisher
-            </button>
+            {error && (
+                <div className="alert alert-danger">
+                    {error}
+                </div>
+            )}
 
-            {showForm && (
+            {canManagePublishers && showForm && (
                 <PublisherForm
                     editingPublisher={editingPublisher}
-                    onPublisherAdded={() => {
-                        loadPublishers();
+                    onPublisherAdded={async () => {
+                        await loadPublishers();
+
                         setShowForm(false);
                         setEditingPublisher(null);
                     }}
                 />
             )}
 
-            <table className="table table-bordered table-striped">
+            {loading ? (
+                <div className="text-center mt-4">
+                    <div
+                        className="spinner-border"
+                        role="status"
+                    >
+                        <span className="visually-hidden">
+                            Loading...
+                        </span>
+                    </div>
 
-                <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th>Publisher Name</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
+                    <p className="mt-2">
+                        Loading publishers...
+                    </p>
+                </div>
+            ) : (
+                <div className="table-responsive">
+                    <table className="table table-bordered table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Publisher Name</th>
 
-                <tbody>
+                                {canManagePublishers && (
+                                    <th>Actions</th>
+                                )}
+                            </tr>
+                        </thead>
 
-                    {publishers.map((publisher, index) => (
+                        <tbody>
+                            {publishers.length > 0 ? (
+                                publishers.map(
+                                    (publisher, index) => (
+                                        <tr
+                                            key={
+                                                publisher.publisherId
+                                            }
+                                        >
+                                            <td>
+                                                {index + 1}
+                                            </td>
 
-                        <tr key={publisher.publisherId}>
+                                            <td>
+                                                {
+                                                    publisher.publisherName
+                                                }
+                                            </td>
 
-                            <td>{index + 1}</td>
+                                            {canManagePublishers && (
+                                                <td>
+                                                    <button
+                                                        className="btn btn-warning btn-sm me-2"
+                                                        onClick={() => {
+                                                            setEditingPublisher(
+                                                                publisher
+                                                            );
 
-                            <td>{publisher.publisherName}</td>
+                                                            setShowForm(
+                                                                true
+                                                            );
+                                                        }}
+                                                    >
+                                                        Edit
+                                                    </button>
 
-                            <td>
-
-                                <button
-                                    className="btn btn-warning btn-sm me-2"
-                                    onClick={() => {
-                                        setEditingPublisher(publisher);
-                                        setShowForm(true);
-                                    }}
-                                >
-                                    Edit
-                                </button>
-
-                                <button
-                                    className="btn btn-danger btn-sm"
-                                    onClick={() =>
-                                        handleDelete(
-                                            publisher.publisherId
-                                        )
-                                    }
-                                >
-                                    Delete
-                                </button>
-
-                            </td>
-
-                        </tr>
-
-                    ))}
-
-                </tbody>
-
-            </table>
-
+                                                    <button
+                                                        className="btn btn-danger btn-sm"
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                publisher.publisherId
+                                                            )
+                                                        }
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            )}
+                                        </tr>
+                                    )
+                                )
+                            ) : (
+                                <tr>
+                                    <td
+                                        colSpan={
+                                            canManagePublishers
+                                                ? "3"
+                                                : "2"
+                                        }
+                                        className="text-center"
+                                    >
+                                        No publishers found.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     );
 }

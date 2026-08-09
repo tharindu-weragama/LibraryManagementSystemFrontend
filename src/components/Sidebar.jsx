@@ -1,65 +1,104 @@
 import { Link } from "react-router-dom";
+import useRole from "../hooks/useRole";
 
 function Sidebar() {
-  return (
-    <aside className="bg-light border-end vh-100 p-3">
+    const {
+        isAdmin,
+        isLibrarian,
+        isMember
+    } = useRole();
 
-      <h5 className="mb-4">Menu</h5>
+    return (
+        <aside className="bg-light border-end vh-100 p-3">
 
-      <ul className="nav flex-column">
+            <h5 className="mb-4">
+                Menu
+            </h5>
 
-        <li className="nav-item">
-          <Link className="nav-link" to="/dashboard">
-            Dashboard
-          </Link>
-        </li>
+            <ul className="nav flex-column">
 
-        <li className="nav-item">
-          <Link className="nav-link" to="/books">
-            Books
-          </Link>
-        </li>
+                <li className="nav-item">
+                    <Link
+                        className="nav-link"
+                        to="/dashboard"
+                    >
+                        Dashboard
+                    </Link>
+                </li>
 
-        <li className="nav-item">
-          <Link className="nav-link" to="/categories">
-            Categories
-          </Link>
-        </li>
+                <li className="nav-item">
+                    <Link
+                        className="nav-link"
+                        to="/books"
+                    >
+                        Books
+                    </Link>
+                </li>
 
-        <li className="nav-item">
-          <Link className="nav-link" to="/publishers">
-            Publishers
-          </Link>
-        </li>
+                {(isAdmin || isLibrarian) && (
+                    <>
+                        <li className="nav-item">
+                            <Link
+                                className="nav-link"
+                                to="/categories"
+                            >
+                                Categories
+                            </Link>
+                        </li>
 
-        <li className="nav-item">
-          <Link className="nav-link" to="/loans">
-            Loans
-          </Link>
-        </li>
+                        <li className="nav-item">
+                            <Link
+                                className="nav-link"
+                                to="/publishers"
+                            >
+                                Publishers
+                            </Link>
+                        </li>
+                    </>
+                )}
 
-        <li className="nav-item">
-          <Link className="nav-link" to="/fines">
-            Fines
-          </Link>
-        </li>
+                <li className="nav-item">
+                    <Link
+                        className="nav-link"
+                        to="/loans"
+                    >
+                        Loans
+                    </Link>
+                </li>
 
-        <li className="nav-item">
-          <Link className="nav-link" to="/users">
-            Users
-          </Link>
-        </li>
+                <li className="nav-item">
+                    <Link
+                        className="nav-link"
+                        to="/fines"
+                    >
+                        Fines
+                    </Link>
+                </li>
 
-        <li className="nav-item">
-          <Link className="nav-link" to="/profile">
-            Profile
-          </Link>
-        </li>
+                {isAdmin && (
+                    <li className="nav-item">
+                        <Link
+                            className="nav-link"
+                            to="/users"
+                        >
+                            Users
+                        </Link>
+                    </li>
+                )}
 
-      </ul>
+                <li className="nav-item">
+                    <Link
+                        className="nav-link"
+                        to="/profile"
+                    >
+                        Profile
+                    </Link>
+                </li>
 
-    </aside>
-  );
+            </ul>
+
+        </aside>
+    );
 }
 
 export default Sidebar;

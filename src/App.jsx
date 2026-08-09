@@ -12,33 +12,144 @@ import Users from "./pages/Users";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+    return (
+        <Routes>
+            <Route path="/" element={<Login />} />
 
-      <Route
-        element={
-          <ProtectedRoute>
-            <MainLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/books" element={<Books />} />
-        <Route path="/categories" element={<Categories />} />
-        <Route path="/publishers" element={<Publishers />} />
-        <Route path="/loans" element={<Loans />} />
-        <Route path="/fines" element={<Fines />} />
-        <Route path="/users" element={<Users />} />
-        <Route path="/profile" element={<Profile />} />
-      </Route>
+            <Route
+                path="/login"
+                element={<Login />}
+            />
 
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
+            <Route
+                path="/register"
+                element={<Register />}
+            />
+
+            <Route
+                path="/forgot-password"
+                element={<ForgotPassword />}
+            />
+
+            <Route
+                path="/reset-password"
+                element={<ResetPassword />}
+            />
+
+            <Route
+                element={
+                    <ProtectedRoute>
+                        <MainLayout />
+                    </ProtectedRoute>
+                }
+            >
+                <Route
+                    path="/dashboard"
+                    element={<Dashboard />}
+                />
+
+                <Route
+                    path="/books"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={[
+                                "Admin",
+                                "Librarian",
+                                "Member"
+                            ]}
+                        >
+                            <Books />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/categories"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={[
+                                "Admin",
+                                "Librarian"
+                            ]}
+                        >
+                            <Categories />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/publishers"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={[
+                                "Admin",
+                                "Librarian"
+                            ]}
+                        >
+                            <Publishers />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/loans"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={[
+                                "Admin",
+                                "Librarian",
+                                "Member"
+                            ]}
+                        >
+                            <Loans />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/fines"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={[
+                                "Admin",
+                                "Librarian",
+                                "Member"
+                            ]}
+                        >
+                            <Fines />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/users"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={[
+                                "Admin"
+                            ]}
+                        >
+                            <Users />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/profile"
+                    element={<Profile />}
+                />
+            </Route>
+
+            <Route
+                path="*"
+                element={<NotFound />}
+            />
+        </Routes>
+    );
 }
 
 export default App;

@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
 import { getBooks, deleteBook } from "../services/bookService";
 import BookForm from "../components/BookForm";
+import useRole from "../hooks/useRole";
 
 function Books() {
     const [books, setBooks] = useState([]);
     const [editingBook, setEditingBook] = useState(null);
     const [showForm, setShowForm] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    const { isAdmin, isLibrarian } = useRole();
+
+    const canManageBooks =
+        isAdmin || isLibrarian;
 
     useEffect(() => {
         loadBooks();
@@ -13,10 +21,24 @@ function Books() {
 
     const loadBooks = async () => {
         try {
+            setLoading(true);
+            setError("");
+
             const response = await getBooks();
+
             setBooks(response.data);
         } catch (error) {
-            console.error("Error loading books:", error);
+            console.error(
+                "Error loading books:",
+                error
+            );
+
+            setError(
+                error.response?.data?.message ||
+                "Failed to load books."
+            );
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -30,93 +52,184 @@ function Books() {
         }
 
         try {
-            await deleteBook(id);
-            alert("Book deleted successfully!");
+            setError("");
 
-            loadBooks();
+            await deleteBook(id);
+
+            await loadBooks();
         } catch (error) {
-            console.error("Error deleting book:", error);
-            alert("Failed to delete book.");
+            console.error(
+                "Error deleting book:",
+                error
+            );
+
+            setError(
+                error.response?.data?.message ||
+                "Failed to delete book."
+            );
         }
     };
 
     return (
         <div>
-            <h2>Books</h2>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <h2 className="mb-0">
+                    Books
+                </h2>
 
-            <button
-                className="btn btn-primary mb-3"
-                onClick={() => {
-                    setEditingBook(null);
-                    setShowForm(!showForm);
-                }}
-            >
-                Add Book
-            </button>
+                {canManageBooks && (
+                    <button
+                        className="btn btn-primary"
+                        onClick={() => {
+                            setEditingBook(null);
+                            setShowForm(!showForm);
+                        }}
+                    >
+                        {showForm
+                            ? "Close"
+                            : "Add Book"}
+                    </button>
+                )}
+            </div>
 
-            {showForm && (
+            {error && (
+                <div className="alert alert-danger">
+                    {error}
+                </div>
+            )}
+
+            {canManageBooks && showForm && (
                 <BookForm
                     editingBook={editingBook}
-                    onBookAdded={() => {
-                        loadBooks();
+                    onBookAdded={async () => {
+                        await loadBooks();
+
                         setShowForm(false);
                         setEditingBook(null);
                     }}
                 />
             )}
 
-            <table className="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th>Title</th>
-                        <th>Author</th>
-                        <th>Category</th>
-                        <th>Publisher</th>
-                        <th>Year</th>
-                        <th>Copies</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
+            {loading ? (
+                <div className="text-center mt-4">
+                    <div
+                        className="spinner-border"
+                        role="status"
+                    >
+                        <span className="visually-hidden">
+                            Loading...
+                        </span>
+                    </div>
 
-                <tbody>
-                    {books.map((book, index) => (
-                        <tr key={book.bookId}>
-                            <td>{index + 1}</td>
-                            <td>{book.title}</td>
-                            <td>{book.author}</td>
-                            <td>{book.categoryName}</td>
-                            <td>{book.publisherName}</td>
-                            <td>{book.publishedYear}</td>
+                    <p className="mt-2">
+                        Loading books...
+                    </p>
+                </div>
+            ) : (
+                <div className="table-responsive">
+                    <table className="table table-bordered table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Category</th>
+                                <th>Publisher</th>
+                                <th>Year</th>
+                                <th>Copies</th>
 
-                            <td>
-                                {book.availableCopies} / {book.totalCopies}
-                            </td>
+                                {canManageBooks && (
+                                    <th>Actions</th>
+                                )}
+                            </tr>
+                        </thead>
 
-                            <td>
-                                <button
-                                    className="btn btn-warning btn-sm me-2"
-                                    onClick={() => {
-                                        setEditingBook(book);
-                                        setShowForm(true);
-                                    }}
-                                >
-                                    Edit
-                                </button>
+                        <tbody>
+                            {books.length > 0 ? (
+                                books.map(
+                                    (book, index) => (
+                                        <tr
+                                            key={book.bookId}
+                                        >
+                                            <td>
+                                                {index + 1}
+                                            </td>
 
-                                <button
-                                    className="btn btn-danger btn-sm"
-                                    onClick={() =>
-                                        handleDelete(book.bookId)
-                                    }
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                                            <td>
+                                                {book.title}
+                                            </td>
+
+                                            <td>
+                                                {book.author}
+                                            </td>
+
+                                            <td>
+                                                {book.categoryName}
+                                            </td>
+
+                                            <td>
+                                                {book.publisherName}
+                                            </td>
+
+                                            <td>
+                                                {book.publishedYear}
+                                            </td>
+
+                                            <td>
+                                                {book.availableCopies} /{" "}
+                                                {book.totalCopies}
+                                            </td>
+
+                                            {canManageBooks && (
+                                                <td>
+                                                    <button
+                                                        className="btn btn-warning btn-sm me-2"
+                                                        onClick={() => {
+                                                            setEditingBook(
+                                                                book
+                                                            );
+
+                                                            setShowForm(
+                                                                true
+                                                            );
+                                                        }}
+                                                    >
+                                                        Edit
+                                                    </button>
+
+                                                    <button
+                                                        className="btn btn-danger btn-sm"
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                book.bookId
+                                                            )
+                                                        }
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            )}
+                                        </tr>
+                                    )
+                                )
+                            ) : (
+                                <tr>
+                                    <td
+                                        colSpan={
+                                            canManageBooks
+                                                ? "8"
+                                                : "7"
+                                        }
+                                        className="text-center"
+                                    >
+                                        No books found.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     );
 }
