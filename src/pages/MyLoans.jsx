@@ -8,18 +8,17 @@ function MyLoans() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    useEffect(() => {
-        loadMyLoans();
-    }, []);
-
     const loadMyLoans = async () => {
         try {
             setLoading(true);
             setError("");
 
-            const response = await getMyLoans();
+            const response =
+                await getMyLoans();
 
-            setLoans(response.data || []);
+            setLoans(
+                response.data || []
+            );
         } catch (error) {
             console.error(
                 "Error loading member loans:",
@@ -34,6 +33,10 @@ function MyLoans() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        loadMyLoans();
+    }, []);
 
     const formatDate = (date) => {
         if (!date) {
@@ -110,25 +113,35 @@ function MyLoans() {
         );
     };
 
-    const activeLoans = loans.filter(
-        (loan) =>
-            getDisplayedStatus(loan) !== "returned"
-    ).length;
+    const activeLoans =
+        loans.filter(
+            (loan) =>
+                getDisplayedStatus(
+                    loan
+                ) !== "returned"
+        ).length;
 
-    const overdueLoans = loans.filter(
-        (loan) =>
-            getDisplayedStatus(loan) === "overdue"
-    ).length;
+    const overdueLoans =
+        loans.filter(
+            (loan) =>
+                getDisplayedStatus(
+                    loan
+                ) === "overdue"
+        ).length;
 
     if (loading) {
         return (
-            <LoadingSpinner message="Loading your loans..." />
+            <LoadingSpinner
+                message="Loading your loans..."
+            />
         );
     }
 
     return (
         <div>
+
             <div className="mb-4">
+
                 <h2 className="mb-1">
                     My Loans
                 </h2>
@@ -136,6 +149,7 @@ function MyLoans() {
                 <p className="text-muted mb-0">
                     View your current and previous borrowing records.
                 </p>
+
             </div>
 
             <AlertMessage
@@ -144,9 +158,13 @@ function MyLoans() {
             />
 
             <div className="row g-3 mb-4">
+
                 <div className="col-sm-4">
+
                     <div className="card shadow-sm border-0 h-100">
+
                         <div className="card-body text-center">
+
                             <div className="text-muted mb-1">
                                 Total Loans
                             </div>
@@ -154,13 +172,19 @@ function MyLoans() {
                             <div className="fs-3 fw-bold">
                                 {loans.length}
                             </div>
+
                         </div>
+
                     </div>
+
                 </div>
 
                 <div className="col-sm-4">
+
                     <div className="card shadow-sm border-0 h-100">
+
                         <div className="card-body text-center">
+
                             <div className="text-muted mb-1">
                                 Current Loans
                             </div>
@@ -168,13 +192,19 @@ function MyLoans() {
                             <div className="fs-3 fw-bold">
                                 {activeLoans}
                             </div>
+
                         </div>
+
                     </div>
+
                 </div>
 
                 <div className="col-sm-4">
+
                     <div className="card shadow-sm border-0 h-100">
+
                         <div className="card-body text-center">
+
                             <div className="text-muted mb-1">
                                 Overdue
                             </div>
@@ -182,18 +212,26 @@ function MyLoans() {
                             <div className="fs-3 fw-bold">
                                 {overdueLoans}
                             </div>
+
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
 
             <div className="card shadow-sm border-0">
+
                 <div className="card-body p-0">
+
                     <div className="table-responsive">
+
                         <table className="table table-striped table-hover align-middle mb-0">
 
                             <thead className="table-light">
                                 <tr>
+
                                     <th className="px-4 py-3">
                                         No.
                                     </th>
@@ -217,16 +255,23 @@ function MyLoans() {
                                     <th className="px-4 py-3 text-center">
                                         Status
                                     </th>
+
                                 </tr>
                             </thead>
 
                             <tbody>
+
                                 {loans.length > 0 ? (
+
                                     loans.map(
                                         (loan, index) => (
+
                                             <tr
-                                                key={loan.loanId}
+                                                key={
+                                                    loan.loanId
+                                                }
                                             >
+
                                                 <td className="px-4 py-4">
                                                     {index + 1}
                                                 </td>
@@ -258,25 +303,37 @@ function MyLoans() {
                                                         loan
                                                     )}
                                                 </td>
+
                                             </tr>
+
                                         )
                                     )
+
                                 ) : (
+
                                     <tr>
+
                                         <td
                                             colSpan="6"
                                             className="text-center py-5 text-muted"
                                         >
                                             You do not have any loan records yet.
                                         </td>
+
                                     </tr>
+
                                 )}
+
                             </tbody>
 
                         </table>
+
                     </div>
+
                 </div>
+
             </div>
+
         </div>
     );
 }

@@ -22,7 +22,8 @@ vi.mock("../services/authService", () => ({
 }));
 
 vi.mock("react-router-dom", async () => {
-    const actual = await vi.importActual("react-router-dom");
+    const actual =
+        await vi.importActual("react-router-dom");
 
     return {
         ...actual,
@@ -57,16 +58,20 @@ describe("Login", () => {
 
         expect(
             screen.getByRole("heading", {
-                name: "Login",
+                name: "Welcome Back",
             })
         ).toBeInTheDocument();
 
         expect(
-            screen.getByLabelText("Email")
+            screen.getByLabelText(
+                "Email Address"
+            )
         ).toBeInTheDocument();
 
         expect(
-            screen.getByLabelText("Password")
+            screen.getByLabelText(
+                "Password"
+            )
         ).toBeInTheDocument();
 
         expect(
@@ -95,12 +100,16 @@ describe("Login", () => {
         renderLogin();
 
         await user.type(
-            screen.getByLabelText("Email"),
+            screen.getByLabelText(
+                "Email Address"
+            ),
             "test@example.com"
         );
 
         await user.type(
-            screen.getByLabelText("Password"),
+            screen.getByLabelText(
+                "Password"
+            ),
             "Password@123"
         );
 
@@ -111,7 +120,9 @@ describe("Login", () => {
         );
 
         await waitFor(() => {
-            expect(login).toHaveBeenCalledWith({
+            expect(
+                login
+            ).toHaveBeenCalledWith({
                 email: "test@example.com",
                 password: "Password@123",
             });
@@ -139,12 +150,16 @@ describe("Login", () => {
         renderLogin();
 
         await user.type(
-            screen.getByLabelText("Email"),
+            screen.getByLabelText(
+                "Email Address"
+            ),
             "test@example.com"
         );
 
         await user.type(
-            screen.getByLabelText("Password"),
+            screen.getByLabelText(
+                "Password"
+            ),
             "Password@123"
         );
 
@@ -156,22 +171,28 @@ describe("Login", () => {
 
         await waitFor(() => {
             expect(
-                localStorage.getItem("accessToken")
+                localStorage.getItem(
+                    "accessToken"
+                )
             ).toBe("access-token");
 
             expect(
-                localStorage.getItem("refreshToken")
+                localStorage.getItem(
+                    "refreshToken"
+                )
             ).toBe("refresh-token");
 
             expect(
                 JSON.parse(
-                    localStorage.getItem("user")
+                    localStorage.getItem(
+                        "user"
+                    )
                 )
             ).toEqual(responseUser);
         });
     });
 
-    test("navigates to dashboard after successful login", async () => {
+    test("navigates member to books after successful login", async () => {
         const user = userEvent.setup();
 
         login.mockResolvedValue({
@@ -190,12 +211,16 @@ describe("Login", () => {
         renderLogin();
 
         await user.type(
-            screen.getByLabelText("Email"),
+            screen.getByLabelText(
+                "Email Address"
+            ),
             "test@example.com"
         );
 
         await user.type(
-            screen.getByLabelText("Password"),
+            screen.getByLabelText(
+                "Password"
+            ),
             "Password@123"
         );
 
@@ -209,7 +234,60 @@ describe("Login", () => {
             expect(
                 mockNavigate
             ).toHaveBeenCalledWith(
-                "/dashboard"
+                "/books",
+                {
+                    replace: true,
+                }
+            );
+        });
+    });
+
+    test("navigates admin to dashboard after successful login", async () => {
+        const user = userEvent.setup();
+
+        login.mockResolvedValue({
+            data: {
+                accessToken: "access-token",
+                refreshToken: "refresh-token",
+                user: {
+                    userId: "1",
+                    fullName: "Admin User",
+                    email: "admin@example.com",
+                    roles: ["Admin"],
+                },
+            },
+        });
+
+        renderLogin();
+
+        await user.type(
+            screen.getByLabelText(
+                "Email Address"
+            ),
+            "admin@example.com"
+        );
+
+        await user.type(
+            screen.getByLabelText(
+                "Password"
+            ),
+            "Password@123"
+        );
+
+        await user.click(
+            screen.getByRole("button", {
+                name: "Login",
+            })
+        );
+
+        await waitFor(() => {
+            expect(
+                mockNavigate
+            ).toHaveBeenCalledWith(
+                "/dashboard",
+                {
+                    replace: true,
+                }
             );
         });
     });
@@ -229,12 +307,16 @@ describe("Login", () => {
         renderLogin();
 
         await user.type(
-            screen.getByLabelText("Email"),
+            screen.getByLabelText(
+                "Email Address"
+            ),
             "wrong@example.com"
         );
 
         await user.type(
-            screen.getByLabelText("Password"),
+            screen.getByLabelText(
+                "Password"
+            ),
             "WrongPassword"
         );
 

@@ -10,31 +10,37 @@ function Users() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
-    const [showCreateForm, setShowCreateForm] = useState(false);
-    const [fullName, setFullName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [creating, setCreating] = useState(false);
+    const [showCreateForm, setShowCreateForm] =
+        useState(false);
+
+    const [fullName, setFullName] =
+        useState("");
+
+    const [email, setEmail] =
+        useState("");
+
+    const [password, setPassword] =
+        useState("");
+
+    const [confirmPassword, setConfirmPassword] =
+        useState("");
+
+    const [creating, setCreating] =
+        useState(false);
 
     const { isAdmin } = useRole();
-
-    useEffect(() => {
-        if (isAdmin) {
-            loadUsers();
-        } else {
-            setLoading(false);
-        }
-    }, [isAdmin]);
 
     const loadUsers = async () => {
         try {
             setLoading(true);
             setError("");
 
-            const response = await getUsers();
+            const response =
+                await getUsers();
 
-            setUsers(response.data);
+            setUsers(
+                response.data || []
+            );
         } catch (error) {
             console.error(
                 "Error loading users:",
@@ -50,6 +56,12 @@ function Users() {
         }
     };
 
+    useEffect(() => {
+        if (isAdmin) {
+            loadUsers();
+        }
+    }, [isAdmin]);
+
     const handleCreateLibrarian = async (e) => {
         e.preventDefault();
 
@@ -62,23 +74,30 @@ function Users() {
             !password ||
             !confirmPassword
         ) {
-            setError("Please complete all fields.");
+            setError(
+                "Please complete all fields."
+            );
             return;
         }
 
         if (password !== confirmPassword) {
-            setError("Passwords do not match.");
+            setError(
+                "Passwords do not match."
+            );
             return;
         }
 
         try {
             setCreating(true);
 
-            const response = await createLibrarian({
-                fullName: fullName.trim(),
-                email: email.trim(),
-                password,
-            });
+            const response =
+                await createLibrarian({
+                    fullName:
+                        fullName.trim(),
+                    email:
+                        email.trim(),
+                    password
+                });
 
             setSuccess(
                 response.data?.message ||
@@ -107,27 +126,38 @@ function Users() {
         }
     };
 
-    const filteredUsers = users.filter((user) => {
-        const searchValue =
-            search.toLowerCase().trim();
+    const filteredUsers =
+        users.filter((user) => {
+            const searchValue =
+                search
+                    .toLowerCase()
+                    .trim();
 
-        const fullName =
-            user.fullName?.toLowerCase() || "";
+            const fullName =
+                user.fullName
+                    ?.toLowerCase() || "";
 
-        const email =
-            user.email?.toLowerCase() || "";
+            const email =
+                user.email
+                    ?.toLowerCase() || "";
 
-        const roles =
-            user.roles
-                ?.join(" ")
-                .toLowerCase() || "";
+            const roles =
+                user.roles
+                    ?.join(" ")
+                    .toLowerCase() || "";
 
-        return (
-            fullName.includes(searchValue) ||
-            email.includes(searchValue) ||
-            roles.includes(searchValue)
-        );
-    });
+            return (
+                fullName.includes(
+                    searchValue
+                ) ||
+                email.includes(
+                    searchValue
+                ) ||
+                roles.includes(
+                    searchValue
+                )
+            );
+        });
 
     if (!isAdmin) {
         return (
@@ -139,7 +169,9 @@ function Users() {
 
     return (
         <div>
+
             <div className="d-flex justify-content-between align-items-center mb-3">
+
                 <h2 className="mb-0">
                     Users
                 </h2>
@@ -159,6 +191,7 @@ function Users() {
                         ? "Close"
                         : "Create Librarian"}
                 </button>
+
             </div>
 
             {success && (
@@ -175,6 +208,7 @@ function Users() {
 
             {showCreateForm && (
                 <div className="card mb-4">
+
                     <div className="card-header">
                         <h5 className="mb-0">
                             Create Librarian Account
@@ -182,12 +216,15 @@ function Users() {
                     </div>
 
                     <div className="card-body">
+
                         <form
                             onSubmit={
                                 handleCreateLibrarian
                             }
                         >
+
                             <div className="mb-3">
+
                                 <label
                                     htmlFor="fullName"
                                     className="form-label"
@@ -207,9 +244,11 @@ function Users() {
                                     }
                                     required
                                 />
+
                             </div>
 
                             <div className="mb-3">
+
                                 <label
                                     htmlFor="email"
                                     className="form-label"
@@ -229,9 +268,11 @@ function Users() {
                                     }
                                     required
                                 />
+
                             </div>
 
                             <div className="mb-3">
+
                                 <label
                                     htmlFor="password"
                                     className="form-label"
@@ -252,9 +293,11 @@ function Users() {
                                     autoComplete="new-password"
                                     required
                                 />
+
                             </div>
 
                             <div className="mb-3">
+
                                 <label
                                     htmlFor="confirmPassword"
                                     className="form-label"
@@ -266,7 +309,9 @@ function Users() {
                                     id="confirmPassword"
                                     type="password"
                                     className="form-control"
-                                    value={confirmPassword}
+                                    value={
+                                        confirmPassword
+                                    }
                                     onChange={(e) =>
                                         setConfirmPassword(
                                             e.target.value
@@ -275,9 +320,11 @@ function Users() {
                                     autoComplete="new-password"
                                     required
                                 />
+
                             </div>
 
                             <div className="d-flex gap-2">
+
                                 <button
                                     type="submit"
                                     className="btn btn-primary"
@@ -292,7 +339,10 @@ function Users() {
                                     type="button"
                                     className="btn btn-secondary"
                                     onClick={() => {
-                                        setShowCreateForm(false);
+                                        setShowCreateForm(
+                                            false
+                                        );
+
                                         setFullName("");
                                         setEmail("");
                                         setPassword("");
@@ -302,26 +352,36 @@ function Users() {
                                 >
                                     Cancel
                                 </button>
+
                             </div>
+
                         </form>
+
                     </div>
+
                 </div>
             )}
 
             <div className="mb-3">
+
                 <input
                     type="text"
                     className="form-control"
                     placeholder="Search by name, email or role..."
                     value={search}
                     onChange={(e) =>
-                        setSearch(e.target.value)
+                        setSearch(
+                            e.target.value
+                        )
                     }
                 />
+
             </div>
 
             {loading ? (
+
                 <div className="text-center mt-4">
+
                     <div
                         className="spinner-border"
                         role="status"
@@ -334,10 +394,15 @@ function Users() {
                     <p className="mt-2">
                         Loading users...
                     </p>
+
                 </div>
+
             ) : (
+
                 <div className="table-responsive">
+
                     <table className="table table-bordered table-striped table-hover">
+
                         <thead>
                             <tr>
                                 <th>No.</th>
@@ -348,14 +413,18 @@ function Users() {
                         </thead>
 
                         <tbody>
+
                             {filteredUsers.length > 0 ? (
+
                                 filteredUsers.map(
                                     (user, index) => (
+
                                         <tr
                                             key={
                                                 user.userId
                                             }
                                         >
+
                                             <td>
                                                 {index + 1}
                                             </td>
@@ -369,30 +438,41 @@ function Users() {
                                             </td>
 
                                             <td>
-                                                {user.roles?.length >
-                                                0
+                                                {user.roles?.length > 0
                                                     ? user.roles.join(
                                                           ", "
                                                       )
                                                     : "No Role"}
                                             </td>
+
                                         </tr>
+
                                     )
                                 )
+
                             ) : (
+
                                 <tr>
+
                                     <td
                                         colSpan="4"
                                         className="text-center"
                                     >
                                         No users found.
                                     </td>
+
                                 </tr>
+
                             )}
+
                         </tbody>
+
                     </table>
+
                 </div>
+
             )}
+
         </div>
     );
 }

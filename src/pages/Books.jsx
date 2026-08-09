@@ -22,10 +22,6 @@ function Books() {
     const canManageBooks =
         isAdmin || isLibrarian;
 
-    useEffect(() => {
-        loadBooks();
-    }, []);
-
     const loadBooks = async () => {
         try {
             setLoading(true);
@@ -51,6 +47,10 @@ function Books() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        loadBooks();
+    }, []);
 
     const handleDelete = async (id) => {
         const confirmed =
@@ -131,6 +131,7 @@ function Books() {
 
     return (
         <div>
+
             <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
 
                 <div>
@@ -151,6 +152,7 @@ function Books() {
                         className="btn btn-primary px-4 py-2"
                         onClick={() => {
                             setEditingBook(null);
+
                             setShowForm(
                                 !showForm
                             );
@@ -161,6 +163,7 @@ function Books() {
                             : "Add Book"}
                     </button>
                 )}
+
             </div>
 
             <AlertMessage
@@ -171,6 +174,7 @@ function Books() {
             {canManageBooks &&
                 showForm && (
                     <div className="mb-4">
+
                         <BookForm
                             editingBook={
                                 editingBook
@@ -182,10 +186,12 @@ function Books() {
                                 setEditingBook(null);
                             }}
                         />
+
                     </div>
                 )}
 
             <div className="mb-4">
+
                 <input
                     type="text"
                     className="form-control"
@@ -197,21 +203,29 @@ function Books() {
                         )
                     }
                 />
+
             </div>
 
             {loading ? (
+
                 <LoadingSpinner
                     message="Loading books..."
                 />
+
             ) : (
+
                 <div className="card shadow-sm border-0">
+
                     <div className="card-body p-0">
 
                         <div className="table-responsive">
+
                             <table className="table table-striped table-hover align-middle mb-0">
 
                                 <thead className="table-light">
+
                                     <tr>
+
                                         <th className="px-4 py-3">
                                             No.
                                         </th>
@@ -251,21 +265,27 @@ function Books() {
                                                 Actions
                                             </th>
                                         )}
+
                                     </tr>
+
                                 </thead>
 
                                 <tbody>
+
                                     {filteredBooks.length > 0 ? (
+
                                         filteredBooks.map(
                                             (
                                                 book,
                                                 index
                                             ) => (
+
                                                 <tr
                                                     key={
                                                         book.bookId
                                                     }
                                                 >
+
                                                     <td className="px-4 py-4">
                                                         {index + 1}
                                                     </td>
@@ -315,6 +335,7 @@ function Books() {
 
                                                     {canManageBooks && (
                                                         <td className="px-4 py-4">
+
                                                             <div className="d-flex flex-column flex-xl-row justify-content-center gap-2">
 
                                                                 <button
@@ -344,13 +365,19 @@ function Books() {
                                                                 </button>
 
                                                             </div>
+
                                                         </td>
                                                     )}
+
                                                 </tr>
+
                                             )
                                         )
+
                                     ) : (
+
                                         <tr>
+
                                             <td
                                                 colSpan={
                                                     canManageBooks
@@ -361,16 +388,23 @@ function Books() {
                                             >
                                                 No books match your search.
                                             </td>
+
                                         </tr>
+
                                     )}
+
                                 </tbody>
 
                             </table>
+
                         </div>
 
                     </div>
+
                 </div>
+
             )}
+
         </div>
     );
 }

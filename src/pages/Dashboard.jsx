@@ -1,4 +1,9 @@
-import { useEffect, useState } from "react";
+import {
+    useCallback,
+    useEffect,
+    useState
+} from "react";
+
 import { Link } from "react-router-dom";
 
 import { getBooks } from "../services/bookService";
@@ -10,6 +15,66 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import AlertMessage from "../components/AlertMessage";
 
 import "../App.css";
+
+function getDisplayedLoanStatus(loan) {
+    const status =
+        loan.status?.toLowerCase() || "";
+
+    if (status === "returned") {
+        return "returned";
+    }
+
+    if (
+        status === "borrowed" &&
+        loan.dueDate
+    ) {
+        const dueDate =
+            new Date(loan.dueDate);
+
+        if (dueDate < new Date()) {
+            return "overdue";
+        }
+    }
+
+    if (status === "borrowed") {
+        return "borrowed";
+    }
+
+    return status;
+}
+
+function DashboardCard({ card }) {
+    return (
+        <Link
+            to={card.link}
+            className="text-dark h-100 d-block"
+        >
+            <div className="card dashboard-card shadow-sm h-100">
+
+                <div className="card-body text-center p-4 d-flex flex-column">
+
+                    <h5 className="dashboard-card-title">
+                        {card.title}
+                    </h5>
+
+                    <div className="dashboard-card-value my-4">
+                        {card.value}
+                    </div>
+
+                    <div className="dashboard-card-subtitle">
+                        {card.subtitle}
+                    </div>
+
+                    <div className="dashboard-card-action text-primary mt-auto pt-3">
+                        {card.action}
+                    </div>
+
+                </div>
+
+            </div>
+        </Link>
+    );
+}
 
 function Dashboard() {
     const [stats, setStats] = useState({
@@ -23,41 +88,13 @@ function Dashboard() {
         unpaidFines: 0
     });
 
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    const [loading, setLoading] =
+        useState(true);
 
-    useEffect(() => {
-        loadDashboard();
-    }, []);
+    const [error, setError] =
+        useState("");
 
-    const getDisplayedLoanStatus = (loan) => {
-        const status =
-            loan.status?.toLowerCase() || "";
-
-        if (status === "returned") {
-            return "returned";
-        }
-
-        if (
-            status === "borrowed" &&
-            loan.dueDate
-        ) {
-            const dueDate =
-                new Date(loan.dueDate);
-
-            if (dueDate < new Date()) {
-                return "overdue";
-            }
-        }
-
-        if (status === "borrowed") {
-            return "borrowed";
-        }
-
-        return status;
-    };
-
-    const loadDashboard = async () => {
+    const loadDashboard = useCallback(async () => {
         try {
             setLoading(true);
             setError("");
@@ -146,7 +183,11 @@ function Dashboard() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        loadDashboard();
+    }, [loadDashboard]);
 
     const topCards = [
         {
@@ -170,79 +211,64 @@ function Dashboard() {
             value: stats.activeLoans,
             subtitle:
                 `${stats.overdueLoans} overdue`,
-            action: "View Active Loans →",
-            link: "/loans?status=active"
+            action:
+                "View Active Loans →",
+            link:
+                "/loans?status=active"
         },
         {
             title: "Fines",
             value: stats.fines,
             subtitle:
                 `${stats.unpaidFines} unpaid`,
-            action: "View Unpaid Fines →",
-            link: "/fines?status=unpaid"
+            action:
+                "View Unpaid Fines →",
+            link:
+                "/fines?status=unpaid"
         }
     ];
 
     const bottomCards = [
         {
-            title: "Total Loan Records",
-            value: stats.loans,
+            title:
+                "Total Loan Records",
+            value:
+                stats.loans,
             subtitle: "",
-            action: "View All Loans →",
-            link: "/loans"
+            action:
+                "View All Loans →",
+            link:
+                "/loans"
         },
         {
-            title: "Overdue Loans",
-            value: stats.overdueLoans,
+            title:
+                "Overdue Loans",
+            value:
+                stats.overdueLoans,
             subtitle: "",
-            action: "View Overdue Loans →",
-            link: "/loans?status=overdue"
+            action:
+                "View Overdue Loans →",
+            link:
+                "/loans?status=overdue"
         },
         {
-            title: "Available Copies",
-            value: stats.availableCopies,
+            title:
+                "Available Copies",
+            value:
+                stats.availableCopies,
             subtitle: "",
-            action: "Browse Books →",
-            link: "/books"
+            action:
+                "Browse Books →",
+            link:
+                "/books"
         }
     ];
 
-    const DashboardCard = ({ card }) => {
-        return (
-            <Link
-                to={card.link}
-                className="text-dark h-100 d-block"
-            >
-                <div className="card dashboard-card shadow-sm h-100">
-
-                    <div className="card-body text-center p-4 d-flex flex-column">
-
-                        <h5 className="dashboard-card-title">
-                            {card.title}
-                        </h5>
-
-                        <div className="dashboard-card-value my-4">
-                            {card.value}
-                        </div>
-
-                        <div className="dashboard-card-subtitle">
-                            {card.subtitle}
-                        </div>
-
-                        <div className="dashboard-card-action text-primary mt-auto pt-3">
-                            {card.action}
-                        </div>
-
-                    </div>
-
-                </div>
-            </Link>
-        );
-    };
-
     if (loading) {
         return (
-            <LoadingSpinner message="Loading dashboard..." />
+            <LoadingSpinner
+                message="Loading dashboard..."
+            />
         );
     }
 
@@ -250,6 +276,7 @@ function Dashboard() {
         <div>
 
             <div className="mb-4">
+
                 <h2 className="mb-1">
                     Dashboard
                 </h2>
@@ -257,6 +284,7 @@ function Dashboard() {
                 <p className="text-muted mb-0">
                     Overview of the current library status.
                 </p>
+
             </div>
 
             <AlertMessage

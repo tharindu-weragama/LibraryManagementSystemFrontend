@@ -3,6 +3,108 @@ import { changePassword } from "../services/authService";
 import useRole from "../hooks/useRole";
 import AlertMessage from "../components/AlertMessage";
 
+function PasswordForm({
+    currentPassword,
+    setCurrentPassword,
+    newPassword,
+    setNewPassword,
+    confirmPassword,
+    setConfirmPassword,
+    loading,
+    error,
+    onSubmit
+}) {
+    return (
+        <form onSubmit={onSubmit}>
+
+            <AlertMessage
+                type="danger"
+                message={error}
+            />
+
+            <div className="mb-3">
+                <label
+                    htmlFor="currentPassword"
+                    className="form-label fw-semibold"
+                >
+                    Current Password
+                </label>
+
+                <input
+                    id="currentPassword"
+                    type="password"
+                    className="form-control"
+                    value={currentPassword}
+                    onChange={(e) =>
+                        setCurrentPassword(
+                            e.target.value
+                        )
+                    }
+                    autoComplete="current-password"
+                    required
+                />
+            </div>
+
+            <div className="mb-3">
+                <label
+                    htmlFor="newPassword"
+                    className="form-label fw-semibold"
+                >
+                    New Password
+                </label>
+
+                <input
+                    id="newPassword"
+                    type="password"
+                    className="form-control"
+                    value={newPassword}
+                    onChange={(e) =>
+                        setNewPassword(
+                            e.target.value
+                        )
+                    }
+                    autoComplete="new-password"
+                    required
+                />
+            </div>
+
+            <div className="mb-4">
+                <label
+                    htmlFor="confirmPassword"
+                    className="form-label fw-semibold"
+                >
+                    Confirm Password
+                </label>
+
+                <input
+                    id="confirmPassword"
+                    type="password"
+                    className="form-control"
+                    value={confirmPassword}
+                    onChange={(e) =>
+                        setConfirmPassword(
+                            e.target.value
+                        )
+                    }
+                    autoComplete="new-password"
+                    required
+                />
+            </div>
+
+            <button
+                type="submit"
+                className="btn btn-primary w-100"
+                disabled={loading}
+            >
+                {loading
+                    ? "Updating..."
+                    : "Update Password"}
+            </button>
+
+        </form>
+    );
+}
+
 function Profile() {
     const { user, roles } = useRole();
 
@@ -129,95 +231,17 @@ function Profile() {
         }
     };
 
-    const PasswordForm = () => (
-        <form onSubmit={handleChangePassword}>
-
-            <AlertMessage
-                type="danger"
-                message={error}
-            />
-
-            <div className="mb-3">
-                <label
-                    htmlFor="currentPassword"
-                    className="form-label fw-semibold"
-                >
-                    Current Password
-                </label>
-
-                <input
-                    id="currentPassword"
-                    type="password"
-                    className="form-control"
-                    value={currentPassword}
-                    onChange={(e) =>
-                        setCurrentPassword(
-                            e.target.value
-                        )
-                    }
-                    autoComplete="current-password"
-                    required
-                />
-            </div>
-
-            <div className="mb-3">
-                <label
-                    htmlFor="newPassword"
-                    className="form-label fw-semibold"
-                >
-                    New Password
-                </label>
-
-                <input
-                    id="newPassword"
-                    type="password"
-                    className="form-control"
-                    value={newPassword}
-                    onChange={(e) =>
-                        setNewPassword(
-                            e.target.value
-                        )
-                    }
-                    autoComplete="new-password"
-                    required
-                />
-            </div>
-
-            <div className="mb-4">
-                <label
-                    htmlFor="confirmPassword"
-                    className="form-label fw-semibold"
-                >
-                    Confirm Password
-                </label>
-
-                <input
-                    id="confirmPassword"
-                    type="password"
-                    className="form-control"
-                    value={confirmPassword}
-                    onChange={(e) =>
-                        setConfirmPassword(
-                            e.target.value
-                        )
-                    }
-                    autoComplete="new-password"
-                    required
-                />
-            </div>
-
-            <button
-                type="submit"
-                className="btn btn-primary w-100"
-                disabled={loading}
-            >
-                {loading
-                    ? "Updating..."
-                    : "Update Password"}
-            </button>
-
-        </form>
-    );
+    const passwordFormProps = {
+        currentPassword,
+        setCurrentPassword,
+        newPassword,
+        setNewPassword,
+        confirmPassword,
+        setConfirmPassword,
+        loading,
+        error,
+        onSubmit: handleChangePassword
+    };
 
     return (
         <div>
@@ -337,7 +361,9 @@ function Profile() {
 
                             <div className="card-body p-4">
 
-                                <PasswordForm />
+                                <PasswordForm
+                                    {...passwordFormProps}
+                                />
 
                             </div>
 
@@ -386,7 +412,9 @@ function Profile() {
 
                             <div className="card-body p-4">
 
-                                <PasswordForm />
+                                <PasswordForm
+                                    {...passwordFormProps}
+                                />
 
                                 <button
                                     type="button"

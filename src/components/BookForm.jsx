@@ -1,113 +1,206 @@
-import { addBook, updateBook } from "../services/bookService";
-import { getCategories } from "../services/categoryService";
-import { getPublishers } from "../services/publisherService";
 import { useEffect, useState } from "react";
+import {
+    addBook,
+    updateBook
+} from "../services/bookService";
+import {
+    getCategories
+} from "../services/categoryService";
+import {
+    getPublishers
+} from "../services/publisherService";
 
-function BookForm({ onBookAdded, editingBook }) {
-    const [title, setTitle] = useState("");
-    const [isbn, setIsbn] = useState("");
-    const [author, setAuthor] = useState("");
-    const [publishedYear, setPublishedYear] = useState("");
-    const [totalCopies, setTotalCopies] = useState("");
-    const [categoryId, setCategoryId] = useState("");
-    const [publisherId, setPublisherId] = useState("");
+function BookFormFields({
+    onBookAdded,
+    editingBook
+}) {
+    const [title, setTitle] =
+        useState(
+            editingBook?.title || ""
+        );
 
-    const [categories, setCategories] = useState([]);
-    const [publishers, setPublishers] = useState([]);
+    const [isbn, setIsbn] =
+        useState(
+            editingBook?.isbn || ""
+        );
+
+    const [author, setAuthor] =
+        useState(
+            editingBook?.author || ""
+        );
+
+    const [
+        publishedYear,
+        setPublishedYear
+    ] = useState(
+        editingBook?.publishedYear || ""
+    );
+
+    const [
+        totalCopies,
+        setTotalCopies
+    ] = useState(
+        editingBook?.totalCopies || ""
+    );
+
+    const [
+        categoryId,
+        setCategoryId
+    ] = useState(
+        editingBook?.categoryId || ""
+    );
+
+    const [
+        publisherId,
+        setPublisherId
+    ] = useState(
+        editingBook?.publisherId || ""
+    );
+
+    const [categories, setCategories] =
+        useState([]);
+
+    const [publishers, setPublishers] =
+        useState([]);
+
+    const [saving, setSaving] =
+        useState(false);
 
     useEffect(() => {
-        loadCategories();
-        loadPublishers();
+        const loadFormData = async () => {
+            try {
+                const [
+                    categoriesResponse,
+                    publishersResponse
+                ] = await Promise.all([
+                    getCategories(),
+                    getPublishers()
+                ]);
+
+                setCategories(
+                    categoriesResponse.data || []
+                );
+
+                setPublishers(
+                    publishersResponse.data || []
+                );
+            } catch (error) {
+                console.error(
+                    "Error loading book form data:",
+                    error
+                );
+            }
+        };
+
+        loadFormData();
     }, []);
 
-    useEffect(() => {
-        if (editingBook) {
-            setTitle(editingBook.title || "");
-            setIsbn(editingBook.isbn || "");
-            setAuthor(editingBook.author || "");
-            setPublishedYear(editingBook.publishedYear || "");
-            setTotalCopies(editingBook.totalCopies || "");
-            setCategoryId(editingBook.categoryId || "");
-            setPublisherId(editingBook.publisherId || "");
-        } else {
-            setTitle("");
-            setIsbn("");
-            setAuthor("");
-            setPublishedYear("");
-            setTotalCopies("");
-            setCategoryId("");
-            setPublisherId("");
-        }
-    }, [editingBook]);
-
-    const loadCategories = async () => {
-        try {
-            const response = await getCategories();
-            setCategories(response.data);
-        } catch (error) {
-            console.error("Error loading categories:", error);
-        }
-    };
-
-    const loadPublishers = async () => {
-        try {
-            const response = await getPublishers();
-            setPublishers(response.data);
-        } catch (error) {
-            console.error("Error loading publishers:", error);
-        }
-    };
-
     const handleSave = async () => {
+        if (
+            !title.trim() ||
+            !isbn.trim() ||
+            !author.trim() ||
+            !publishedYear ||
+            !totalCopies ||
+            !categoryId ||
+            !publisherId
+        ) {
+            alert(
+                "Please complete all book fields."
+            );
+            return;
+        }
+
         const book = {
-            title,
-            isbn,
-            author,
-            publishedYear: Number(publishedYear),
-            totalCopies: Number(totalCopies),
-            categoryId: Number(categoryId),
-            publisherId: Number(publisherId),
+            title: title.trim(),
+            isbn: isbn.trim(),
+            author: author.trim(),
+            publishedYear:
+                Number(publishedYear),
+            totalCopies:
+                Number(totalCopies),
+            categoryId:
+                Number(categoryId),
+            publisherId:
+                Number(publisherId)
         };
 
         try {
+            setSaving(true);
+
             if (editingBook) {
-                await updateBook(editingBook.bookId, book);
-                alert("Book updated successfully!");
+                await updateBook(
+                    editingBook.bookId,
+                    book
+                );
+
+                alert(
+                    "Book updated successfully!"
+                );
             } else {
                 await addBook(book);
-                alert("Book added successfully!");
+
+                alert(
+                    "Book added successfully!"
+                );
             }
 
-            onBookAdded();
+            await onBookAdded();
         } catch (error) {
-            console.error("Error saving book:", error);
-            alert("Failed to save book.");
+            console.error(
+                "Error saving book:",
+                error
+            );
+
+            alert(
+                error.response?.data?.message ||
+                "Failed to save book."
+            );
+        } finally {
+            setSaving(false);
         }
     };
 
     return (
         <div className="card p-3 mb-3">
-            <h4>{editingBook ? "Edit Book" : "Add Book"}</h4>
+
+            <h4 className="mb-3">
+                {editingBook
+                    ? "Edit Book"
+                    : "Add Book"}
+            </h4>
 
             <input
                 className="form-control mb-2"
                 placeholder="Title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) =>
+                    setTitle(
+                        e.target.value
+                    )
+                }
             />
 
             <input
                 className="form-control mb-2"
                 placeholder="ISBN"
                 value={isbn}
-                onChange={(e) => setIsbn(e.target.value)}
+                onChange={(e) =>
+                    setIsbn(
+                        e.target.value
+                    )
+                }
             />
 
             <input
                 className="form-control mb-2"
                 placeholder="Author"
                 value={author}
-                onChange={(e) => setAuthor(e.target.value)}
+                onChange={(e) =>
+                    setAuthor(
+                        e.target.value
+                    )
+                }
             />
 
             <input
@@ -115,58 +208,122 @@ function BookForm({ onBookAdded, editingBook }) {
                 className="form-control mb-2"
                 placeholder="Published Year"
                 value={publishedYear}
-                onChange={(e) => setPublishedYear(e.target.value)}
+                onChange={(e) =>
+                    setPublishedYear(
+                        e.target.value
+                    )
+                }
             />
 
             <input
                 type="number"
                 className="form-control mb-2"
                 placeholder="Total Copies"
+                min="1"
                 value={totalCopies}
-                onChange={(e) => setTotalCopies(e.target.value)}
+                onChange={(e) =>
+                    setTotalCopies(
+                        e.target.value
+                    )
+                }
             />
 
             <select
                 className="form-select mb-2"
                 value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
+                onChange={(e) =>
+                    setCategoryId(
+                        e.target.value
+                    )
+                }
             >
-                <option value="">Select Category</option>
+                <option value="">
+                    Select Category
+                </option>
 
-                {categories.map((category) => (
-                    <option
-                        key={category.categoryId}
-                        value={category.categoryId}
-                    >
-                        {category.categoryName}
-                    </option>
-                ))}
+                {categories.map(
+                    (category) => (
+                        <option
+                            key={
+                                category.categoryId
+                            }
+                            value={
+                                category.categoryId
+                            }
+                        >
+                            {
+                                category.categoryName
+                            }
+                        </option>
+                    )
+                )}
             </select>
 
             <select
                 className="form-select mb-3"
                 value={publisherId}
-                onChange={(e) => setPublisherId(e.target.value)}
+                onChange={(e) =>
+                    setPublisherId(
+                        e.target.value
+                    )
+                }
             >
-                <option value="">Select Publisher</option>
+                <option value="">
+                    Select Publisher
+                </option>
 
-                {publishers.map((publisher) => (
-                    <option
-                        key={publisher.publisherId}
-                        value={publisher.publisherId}
-                    >
-                        {publisher.publisherName}
-                    </option>
-                ))}
+                {publishers.map(
+                    (publisher) => (
+                        <option
+                            key={
+                                publisher.publisherId
+                            }
+                            value={
+                                publisher.publisherId
+                            }
+                        >
+                            {
+                                publisher.publisherName
+                            }
+                        </option>
+                    )
+                )}
             </select>
 
             <button
+                type="button"
                 className="btn btn-success"
                 onClick={handleSave}
+                disabled={saving}
             >
-                Save
+                {saving
+                    ? "Saving..."
+                    : editingBook
+                        ? "Update Book"
+                        : "Save Book"}
             </button>
+
         </div>
+    );
+}
+
+function BookForm({
+    onBookAdded,
+    editingBook
+}) {
+    return (
+        <BookFormFields
+            key={
+                editingBook?.bookId ||
+                "new-book"
+            }
+            editingBook={
+                editingBook
+            }
+            onBookAdded={
+                onBookAdded
+            }
+        />
     );
 }
 
