@@ -15,7 +15,7 @@ function ForgotPassword() {
         setSuccess("");
 
         if (!email.trim()) {
-            setError("Please enter your email.");
+            setError("Please enter your email address.");
             return;
         }
 
@@ -27,12 +27,12 @@ function ForgotPassword() {
 
             setSuccess(
                 response.data?.message ||
-                "Password reset instructions have been sent."
+                "Password reset instructions have been sent to your email."
             );
         } catch (error) {
             setError(
                 error.response?.data?.message ||
-                "Unable to process the request."
+                "Unable to process your request."
             );
         } finally {
             setLoading(false);
@@ -41,18 +41,28 @@ function ForgotPassword() {
 
     return (
         <div className="container min-vh-100 d-flex align-items-center justify-content-center">
+
             <div className="row justify-content-center w-100">
-                <div className="col-sm-10 col-md-6 col-lg-4">
 
-                    <div className="card shadow-sm p-4">
+                <div className="col-sm-10 col-md-6 col-lg-5">
 
-                        <h3 className="text-center mb-2">
-                            Library Management System
-                        </h3>
+                    <div className="card shadow-lg border-0 rounded-4 p-4">
 
-                        <h5 className="text-center mb-4">
-                            Forgot Password
-                        </h5>
+                        <div className="text-center mb-4">
+
+                            <h5 className="text-primary fw-semibold mb-2">
+                                Library Management System
+                            </h5>
+
+                            <h2 className="fw-bold mb-2">
+                                Forgot Password
+                            </h2>
+
+                            <p className="text-muted mb-0">
+                                Enter your registered email address and we'll send you a password reset link.
+                            </p>
+
+                        </div>
 
                         {error && (
                             <div className="alert alert-danger">
@@ -72,19 +82,23 @@ function ForgotPassword() {
 
                                 <label
                                     htmlFor="email"
-                                    className="form-label"
+                                    className="form-label fw-semibold"
                                 >
-                                    Email
+                                    Email Address
                                 </label>
 
                                 <input
                                     id="email"
                                     type="email"
                                     className="form-control"
+                                    placeholder="Enter your email"
                                     value={email}
                                     onChange={(e) =>
                                         setEmail(e.target.value)
                                     }
+                                    style={{
+                                        minHeight: "48px"
+                                    }}
                                     required
                                 />
 
@@ -92,7 +106,7 @@ function ForgotPassword() {
 
                             <button
                                 type="submit"
-                                className="btn btn-primary w-100"
+                                className="btn btn-primary w-100 py-2"
                                 disabled={loading}
                             >
                                 {loading
@@ -102,15 +116,23 @@ function ForgotPassword() {
 
                         </form>
 
-                        <div className="text-center mt-3">
-                            <Link to="/login">
-                                Back to Login
+                        <div className="text-center mt-4">
+
+                            <Link
+                                to="/login"
+                                className="text-decoration-none"
+                            >
+                                ← Back to Login
                             </Link>
+
                         </div>
 
                     </div>
+
                 </div>
+
             </div>
+
         </div>
     );
 }

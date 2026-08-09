@@ -4,6 +4,10 @@ export const getLoans = () => {
     return api.get("/Loans");
 };
 
+export const getMyLoans = () => {
+    return api.get("/Loans/my-loans");
+};
+
 export const getLoanById = (id) => {
     return api.get(`/Loans/${id}`);
 };

@@ -4,6 +4,10 @@ export const getFines = () => {
     return api.get("/Fines");
 };
 
+export const getMyFines = () => {
+    return api.get("/Fines/my-fines");
+};
+
 export const getFineById = (id) => {
     return api.get(`/Fines/${id}`);
 };

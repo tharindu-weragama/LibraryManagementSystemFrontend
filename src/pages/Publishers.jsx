@@ -75,7 +75,9 @@ function Publishers() {
 
     return (
         <div>
+
             <div className="d-flex justify-content-between align-items-center mb-3">
+
                 <h2 className="mb-0">
                     Publishers
                 </h2>
@@ -93,6 +95,7 @@ function Publishers() {
                             : "Add Publisher"}
                     </button>
                 )}
+
             </div>
 
             {error && (
@@ -114,7 +117,9 @@ function Publishers() {
             )}
 
             {loading ? (
+
                 <div className="text-center mt-4">
+
                     <div
                         className="spinner-border"
                         role="status"
@@ -127,74 +132,101 @@ function Publishers() {
                     <p className="mt-2">
                         Loading publishers...
                     </p>
+
                 </div>
+
             ) : (
+
                 <div className="table-responsive">
+
                     <table className="table table-bordered table-striped table-hover align-middle">
+
                         <thead>
                             <tr>
-                                <th>No.</th>
-                                <th>Publisher Name</th>
+
+                                <th style={{ width: "80px" }}>
+                                    No.
+                                </th>
+
+                                <th>
+                                    Publisher Name
+                                </th>
 
                                 {canManagePublishers && (
-                                    <th>Actions</th>
+                                    <th
+                                        className="text-center"
+                                        style={{ width: "180px" }}
+                                    >
+                                        Actions
+                                    </th>
                                 )}
+
                             </tr>
                         </thead>
 
                         <tbody>
+
                             {publishers.length > 0 ? (
+
                                 publishers.map(
                                     (publisher, index) => (
+
                                         <tr
-                                            key={
-                                                publisher.publisherId
-                                            }
+                                            key={publisher.publisherId}
                                         >
+
                                             <td>
                                                 {index + 1}
                                             </td>
 
                                             <td>
-                                                {
-                                                    publisher.publisherName
-                                                }
+                                                {publisher.publisherName}
                                             </td>
 
                                             {canManagePublishers && (
+
                                                 <td>
-                                                    <button
-                                                        className="btn btn-warning btn-sm me-2"
-                                                        onClick={() => {
-                                                            setEditingPublisher(
-                                                                publisher
-                                                            );
 
-                                                            setShowForm(
-                                                                true
-                                                            );
-                                                        }}
-                                                    >
-                                                        Edit
-                                                    </button>
+                                                    <div className="d-flex justify-content-center gap-2">
 
-                                                    <button
-                                                        className="btn btn-danger btn-sm"
-                                                        onClick={() =>
-                                                            handleDelete(
-                                                                publisher.publisherId
-                                                            )
-                                                        }
-                                                    >
-                                                        Delete
-                                                    </button>
+                                                        <button
+                                                            className="btn btn-warning btn-sm"
+                                                            onClick={() => {
+                                                                setEditingPublisher(
+                                                                    publisher
+                                                                );
+                                                                setShowForm(true);
+                                                            }}
+                                                        >
+                                                            Edit
+                                                        </button>
+
+                                                        <button
+                                                            className="btn btn-danger btn-sm"
+                                                            onClick={() =>
+                                                                handleDelete(
+                                                                    publisher.publisherId
+                                                                )
+                                                            }
+                                                        >
+                                                            Delete
+                                                        </button>
+
+                                                    </div>
+
                                                 </td>
+
                                             )}
+
                                         </tr>
+
                                     )
                                 )
+
                             ) : (
+
                                 <tr>
+
                                     <td
                                         colSpan={
                                             canManagePublishers
@@ -205,12 +237,19 @@ function Publishers() {
                                     >
                                         No publishers found.
                                     </td>
+
                                 </tr>
+
                             )}
+
                         </tbody>
+
                     </table>
+
                 </div>
+
             )}
+
         </div>
     );
 }

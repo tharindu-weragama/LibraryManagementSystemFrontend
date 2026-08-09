@@ -75,7 +75,9 @@ function Categories() {
 
     return (
         <div>
+
             <div className="d-flex justify-content-between align-items-center mb-3">
+
                 <h2 className="mb-0">
                     Categories
                 </h2>
@@ -93,6 +95,7 @@ function Categories() {
                             : "Add Category"}
                     </button>
                 )}
+
             </div>
 
             {error && (
@@ -115,6 +118,7 @@ function Categories() {
 
             {loading ? (
                 <div className="text-center mt-4">
+
                     <div
                         className="spinner-border"
                         role="status"
@@ -127,74 +131,93 @@ function Categories() {
                     <p className="mt-2">
                         Loading categories...
                     </p>
+
                 </div>
             ) : (
                 <div className="table-responsive">
+
                     <table className="table table-bordered table-striped table-hover align-middle">
+
                         <thead>
                             <tr>
-                                <th>No.</th>
-                                <th>Category Name</th>
+
+                                <th style={{ width: "80px" }}>
+                                    No.
+                                </th>
+
+                                <th>
+                                    Category Name
+                                </th>
 
                                 {canManageCategories && (
-                                    <th>Actions</th>
+                                    <th
+                                        className="text-center"
+                                        style={{ width: "180px" }}
+                                    >
+                                        Actions
+                                    </th>
                                 )}
+
                             </tr>
                         </thead>
 
                         <tbody>
+
                             {categories.length > 0 ? (
                                 categories.map(
                                     (category, index) => (
+
                                         <tr
-                                            key={
-                                                category.categoryId
-                                            }
+                                            key={category.categoryId}
                                         >
+
                                             <td>
                                                 {index + 1}
                                             </td>
 
                                             <td>
-                                                {
-                                                    category.categoryName
-                                                }
+                                                {category.categoryName}
                                             </td>
 
                                             {canManageCategories && (
+
                                                 <td>
-                                                    <button
-                                                        className="btn btn-warning btn-sm me-2"
-                                                        onClick={() => {
-                                                            setEditingCategory(
-                                                                category
-                                                            );
 
-                                                            setShowForm(
-                                                                true
-                                                            );
-                                                        }}
-                                                    >
-                                                        Edit
-                                                    </button>
+                                                    <div className="d-flex justify-content-center gap-2">
 
-                                                    <button
-                                                        className="btn btn-danger btn-sm"
-                                                        onClick={() =>
-                                                            handleDelete(
-                                                                category.categoryId
-                                                            )
-                                                        }
-                                                    >
-                                                        Delete
-                                                    </button>
+                                                        <button
+                                                            className="btn btn-warning btn-sm"
+                                                            onClick={() => {
+                                                                setEditingCategory(category);
+                                                                setShowForm(true);
+                                                            }}
+                                                        >
+                                                            Edit
+                                                        </button>
+
+                                                        <button
+                                                            className="btn btn-danger btn-sm"
+                                                            onClick={() =>
+                                                                handleDelete(category.categoryId)
+                                                            }
+                                                        >
+                                                            Delete
+                                                        </button>
+
+                                                    </div>
+
                                                 </td>
+
                                             )}
+
                                         </tr>
+
                                     )
                                 )
                             ) : (
+
                                 <tr>
+
                                     <td
                                         colSpan={
                                             canManageCategories
@@ -205,12 +228,18 @@ function Categories() {
                                     >
                                         No categories found.
                                     </td>
+
                                 </tr>
+
                             )}
+
                         </tbody>
+
                     </table>
+
                 </div>
             )}
+
         </div>
     );
 }

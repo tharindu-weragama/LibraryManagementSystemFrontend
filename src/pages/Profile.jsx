@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { changePassword } from "../services/authService";
 import useRole from "../hooks/useRole";
+import AlertMessage from "../components/AlertMessage";
 
 function Profile() {
     const { user, roles } = useRole();
@@ -36,6 +37,13 @@ function Profile() {
         user?.Email ||
         "Not available";
 
+    const memberId =
+        user?.memberCode ||
+        user?.MemberCode ||
+        user?.memberNumber ||
+        user?.MemberNumber ||
+        "Not available";
+
     const role =
         Array.isArray(roles)
             ? roles.join(", ")
@@ -46,6 +54,17 @@ function Profile() {
         setNewPassword("");
         setConfirmPassword("");
         setError("");
+    };
+
+    const openPasswordForm = () => {
+        setSuccess("");
+        setError("");
+        setShowPasswordForm(true);
+    };
+
+    const closePasswordForm = () => {
+        resetPasswordForm();
+        setShowPasswordForm(false);
     };
 
     const handleChangePassword = async (e) => {
@@ -110,192 +129,284 @@ function Profile() {
         }
     };
 
+    const PasswordForm = () => (
+        <form onSubmit={handleChangePassword}>
+
+            <AlertMessage
+                type="danger"
+                message={error}
+            />
+
+            <div className="mb-3">
+                <label
+                    htmlFor="currentPassword"
+                    className="form-label fw-semibold"
+                >
+                    Current Password
+                </label>
+
+                <input
+                    id="currentPassword"
+                    type="password"
+                    className="form-control"
+                    value={currentPassword}
+                    onChange={(e) =>
+                        setCurrentPassword(
+                            e.target.value
+                        )
+                    }
+                    autoComplete="current-password"
+                    required
+                />
+            </div>
+
+            <div className="mb-3">
+                <label
+                    htmlFor="newPassword"
+                    className="form-label fw-semibold"
+                >
+                    New Password
+                </label>
+
+                <input
+                    id="newPassword"
+                    type="password"
+                    className="form-control"
+                    value={newPassword}
+                    onChange={(e) =>
+                        setNewPassword(
+                            e.target.value
+                        )
+                    }
+                    autoComplete="new-password"
+                    required
+                />
+            </div>
+
+            <div className="mb-4">
+                <label
+                    htmlFor="confirmPassword"
+                    className="form-label fw-semibold"
+                >
+                    Confirm Password
+                </label>
+
+                <input
+                    id="confirmPassword"
+                    type="password"
+                    className="form-control"
+                    value={confirmPassword}
+                    onChange={(e) =>
+                        setConfirmPassword(
+                            e.target.value
+                        )
+                    }
+                    autoComplete="new-password"
+                    required
+                />
+            </div>
+
+            <button
+                type="submit"
+                className="btn btn-primary w-100"
+                disabled={loading}
+            >
+                {loading
+                    ? "Updating..."
+                    : "Update Password"}
+            </button>
+
+        </form>
+    );
+
     return (
         <div>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="mb-0">
-                    Profile
-                </h2>
+
+            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+
+                <div>
+                    <h2 className="mb-1">
+                        Profile
+                    </h2>
+
+                    <p className="text-muted mb-0">
+                        View your account information.
+                    </p>
+                </div>
 
                 <button
-                    className="btn btn-outline-primary"
-                    onClick={() => {
-                        setShowPasswordForm(
-                            !showPasswordForm
-                        );
-
-                        setError("");
-                        setSuccess("");
-
-                        if (showPasswordForm) {
-                            resetPasswordForm();
-                        }
-                    }}
+                    type="button"
+                    className={
+                        showPasswordForm
+                            ? "btn btn-outline-secondary px-4"
+                            : "btn btn-outline-primary px-4"
+                    }
+                    onClick={
+                        showPasswordForm
+                            ? closePasswordForm
+                            : openPasswordForm
+                    }
                 >
                     {showPasswordForm
                         ? "Cancel"
                         : "Change Password"}
                 </button>
+
             </div>
 
-            {success && (
-                <div className="alert alert-success">
-                    {success}
-                </div>
-            )}
+            <AlertMessage
+                type="success"
+                message={success}
+            />
 
-            <div className="card mb-4 shadow-sm">
-                <div className="card-header">
-                    <h5 className="mb-0">
-                        Account Information
-                    </h5>
-                </div>
+            <div className="row g-4">
 
-                <div className="card-body">
-                    <div className="row mb-3">
-                        <div className="col-md-4 fw-bold">
-                            Full Name
+                <div
+                    className={
+                        showPasswordForm
+                            ? "col-12 col-lg-8"
+                            : "col-12"
+                    }
+                >
+                    <div className="card shadow-sm border-0 h-100">
+
+                        <div className="card-header bg-white py-3">
+                            <h5 className="mb-0">
+                                Account Information
+                            </h5>
                         </div>
 
-                        <div className="col-md-8">
-                            {fullName}
+                        <div className="card-body p-4">
+
+                            <div className="row py-3 border-bottom">
+                                <div className="col-sm-4 text-muted fw-semibold">
+                                    Member ID
+                                </div>
+
+                                <div className="col-sm-8 fw-semibold">
+                                    {memberId}
+                                </div>
+                            </div>
+
+                            <div className="row py-3 border-bottom">
+                                <div className="col-sm-4 text-muted fw-semibold">
+                                    Full Name
+                                </div>
+
+                                <div className="col-sm-8 fw-semibold">
+                                    {fullName}
+                                </div>
+                            </div>
+
+                            <div className="row py-3 border-bottom">
+                                <div className="col-sm-4 text-muted fw-semibold">
+                                    Email
+                                </div>
+
+                                <div className="col-sm-8 text-break">
+                                    {email}
+                                </div>
+                            </div>
+
+                            <div className="row py-3">
+                                <div className="col-sm-4 text-muted fw-semibold">
+                                    Role
+                                </div>
+
+                                <div className="col-sm-8">
+                                    <span className="badge bg-primary px-3 py-2">
+                                        {role}
+                                    </span>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
-
-                    <div className="row mb-3">
-                        <div className="col-md-4 fw-bold">
-                            Email
-                        </div>
-
-                        <div className="col-md-8">
-                            {email}
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-md-4 fw-bold">
-                            Role
-                        </div>
-
-                        <div className="col-md-8">
-                            <span className="badge bg-primary">
-                                {role}
-                            </span>
-                        </div>
-                    </div>
                 </div>
+
+                {showPasswordForm && (
+                    <div className="col-lg-4 d-none d-lg-block">
+
+                        <div className="card shadow-sm border-0 h-100">
+
+                            <div className="card-header bg-white py-3">
+                                <h5 className="mb-0">
+                                    Change Password
+                                </h5>
+                            </div>
+
+                            <div className="card-body p-4">
+
+                                <PasswordForm />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                )}
+
             </div>
 
             {showPasswordForm && (
-                <div className="card shadow-sm">
-                    <div className="card-header">
-                        <h5 className="mb-0">
-                            Change Password
-                        </h5>
-                    </div>
+                <div
+                    className="d-lg-none position-fixed top-0 start-0 w-100 h-100"
+                    style={{
+                        backgroundColor:
+                            "rgba(0, 0, 0, 0.5)",
+                        zIndex: 1050,
+                        overflowY: "auto"
+                    }}
+                >
+                    <div className="d-flex justify-content-center align-items-start min-vh-100 p-3">
 
-                    <div className="card-body">
-
-                        {error && (
-                            <div className="alert alert-danger">
-                                {error}
-                            </div>
-                        )}
-
-                        <form
-                            onSubmit={
-                                handleChangePassword
-                            }
+                        <div
+                            className="card shadow-lg border-0 w-100 mt-4"
+                            style={{
+                                maxWidth: "420px"
+                            }}
                         >
-                            <div className="mb-3">
-                                <label
-                                    htmlFor="currentPassword"
-                                    className="form-label"
-                                >
-                                    Current Password
-                                </label>
 
-                                <input
-                                    id="currentPassword"
-                                    type="password"
-                                    className="form-control"
-                                    value={
-                                        currentPassword
+                            <div className="card-header bg-white d-flex justify-content-between align-items-center py-3">
+
+                                <h5 className="mb-0">
+                                    Change Password
+                                </h5>
+
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    aria-label="Close"
+                                    onClick={
+                                        closePasswordForm
                                     }
-                                    onChange={(e) =>
-                                        setCurrentPassword(
-                                            e.target.value
-                                        )
-                                    }
-                                    autoComplete="current-password"
-                                    required
                                 />
+
                             </div>
 
-                            <div className="mb-3">
-                                <label
-                                    htmlFor="newPassword"
-                                    className="form-label"
-                                >
-                                    New Password
-                                </label>
+                            <div className="card-body p-4">
 
-                                <input
-                                    id="newPassword"
-                                    type="password"
-                                    className="form-control"
-                                    value={
-                                        newPassword
+                                <PasswordForm />
+
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-secondary w-100 mt-2"
+                                    onClick={
+                                        closePasswordForm
                                     }
-                                    onChange={(e) =>
-                                        setNewPassword(
-                                            e.target.value
-                                        )
-                                    }
-                                    autoComplete="new-password"
-                                    required
-                                />
+                                    disabled={loading}
+                                >
+                                    Cancel
+                                </button>
+
                             </div>
 
-                            <div className="mb-3">
-                                <label
-                                    htmlFor="confirmPassword"
-                                    className="form-label"
-                                >
-                                    Confirm New Password
-                                </label>
-
-                                <input
-                                    id="confirmPassword"
-                                    type="password"
-                                    className="form-control"
-                                    value={
-                                        confirmPassword
-                                    }
-                                    onChange={(e) =>
-                                        setConfirmPassword(
-                                            e.target.value
-                                        )
-                                    }
-                                    autoComplete="new-password"
-                                    required
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="btn btn-primary"
-                                disabled={loading}
-                            >
-                                {loading
-                                    ? "Changing Password..."
-                                    : "Change Password"}
-                            </button>
-                        </form>
+                        </div>
 
                     </div>
                 </div>
             )}
+
         </div>
     );
 }

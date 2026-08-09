@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import useRole from "../hooks/useRole";
 
 function Sidebar() {
@@ -8,95 +8,120 @@ function Sidebar() {
         isMember
     } = useRole();
 
+    const getLinkClass = ({ isActive }) => {
+        return `
+            nav-link
+            rounded-3
+            px-3
+            py-2
+            mb-2
+            fw-medium
+            ${isActive
+                ? "bg-primary text-white shadow-sm"
+                : "text-dark"
+            }
+        `;
+    };
+
     return (
-        <aside className="bg-light border-end vh-100 p-3">
-
-            <h5 className="mb-4">
+        <aside
+            className="
+                bg-white
+                border-end
+                p-3
+                p-lg-4
+                sidebar-panel
+            "
+        >
+            <h4 className="fw-bold mb-4">
                 Menu
-            </h5>
+            </h4>
 
-            <ul className="nav flex-column">
+            <nav className="nav flex-column">
 
-                <li className="nav-item">
-                    <Link
-                        className="nav-link"
+                {(isAdmin || isLibrarian) && (
+                    <NavLink
                         to="/dashboard"
+                        className={getLinkClass}
                     >
                         Dashboard
-                    </Link>
-                </li>
+                    </NavLink>
+                )}
 
-                <li className="nav-item">
-                    <Link
-                        className="nav-link"
-                        to="/books"
-                    >
-                        Books
-                    </Link>
-                </li>
+                <NavLink
+                    to="/books"
+                    className={getLinkClass}
+                >
+                    Books
+                </NavLink>
 
                 {(isAdmin || isLibrarian) && (
                     <>
-                        <li className="nav-item">
-                            <Link
-                                className="nav-link"
-                                to="/categories"
-                            >
-                                Categories
-                            </Link>
-                        </li>
+                        <NavLink
+                            to="/categories"
+                            className={getLinkClass}
+                        >
+                            Categories
+                        </NavLink>
 
-                        <li className="nav-item">
-                            <Link
-                                className="nav-link"
-                                to="/publishers"
-                            >
-                                Publishers
-                            </Link>
-                        </li>
+                        <NavLink
+                            to="/publishers"
+                            className={getLinkClass}
+                        >
+                            Publishers
+                        </NavLink>
+
+                        <NavLink
+                            to="/loans"
+                            className={getLinkClass}
+                        >
+                            Loans
+                        </NavLink>
+
+                        <NavLink
+                            to="/fines"
+                            className={getLinkClass}
+                        >
+                            Fines
+                        </NavLink>
                     </>
                 )}
 
-                <li className="nav-item">
-                    <Link
-                        className="nav-link"
-                        to="/loans"
-                    >
-                        Loans
-                    </Link>
-                </li>
-
-                <li className="nav-item">
-                    <Link
-                        className="nav-link"
-                        to="/fines"
-                    >
-                        Fines
-                    </Link>
-                </li>
-
                 {isAdmin && (
-                    <li className="nav-item">
-                        <Link
-                            className="nav-link"
-                            to="/users"
-                        >
-                            Users
-                        </Link>
-                    </li>
+                    <NavLink
+                        to="/users"
+                        className={getLinkClass}
+                    >
+                        Users
+                    </NavLink>
                 )}
 
-                <li className="nav-item">
-                    <Link
-                        className="nav-link"
-                        to="/profile"
-                    >
-                        Profile
-                    </Link>
-                </li>
+                {isMember && (
+                    <>
+                        <NavLink
+                            to="/my-loans"
+                            className={getLinkClass}
+                        >
+                            My Loans
+                        </NavLink>
 
-            </ul>
+                        <NavLink
+                            to="/my-fines"
+                            className={getLinkClass}
+                        >
+                            My Fines
+                        </NavLink>
+                    </>
+                )}
 
+                <NavLink
+                    to="/profile"
+                    className={getLinkClass}
+                >
+                    Profile
+                </NavLink>
+
+            </nav>
         </aside>
     );
 }

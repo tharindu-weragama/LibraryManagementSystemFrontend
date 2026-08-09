@@ -4,29 +4,45 @@ import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
 
 function MainLayout() {
-  return (
-    <>
-      <Navbar />
+    return (
+        <div className="d-flex flex-column min-vh-100 bg-light">
 
-      <div className="container-fluid">
-        <div className="row">
+            <Navbar />
 
-          <div className="col-md-3 col-lg-2 p-0">
-            <Sidebar />
-          </div>
+            <div className="container-fluid flex-grow-1 px-0">
 
-          <div className="col-md-9 col-lg-10 p-4">
-            <main>
-              <Outlet />
-            </main>
-          </div>
+                <div className="row g-0 min-vh-100">
+
+                    <div className="col-12 col-md-3 col-lg-2 col-xl-2">
+                        <Sidebar />
+                    </div>
+
+                    <div className="col-12 col-md-9 col-lg-10 col-xl-10">
+
+                        <main className="py-4 px-3 px-sm-4 px-lg-4 px-xl-5">
+
+                            <div
+                                className="w-100"
+                                style={{
+                                    maxWidth: "1500px",
+                                    margin: "0 auto"
+                                }}
+                            >
+                                <Outlet />
+                            </div>
+
+                        </main>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <Footer />
 
         </div>
-      </div>
-
-      <Footer />
-    </>
-  );
+    );
 }
 
 export default MainLayout;
